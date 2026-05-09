@@ -1,0 +1,40 @@
+% ==============================================================================
+\input{before.tex}\title{   Knowledge Journal   }\begin{document} \maketitle \tableofcontents
+% ==============================================================================
+
+
+
+
+
+% ==============================================================================
+\clearpage\section{ Isolating CPU Cores }
+
+
+\begin{enumerate}
+
+\item isolating CPU-cores                                                                                                                                                     
+    \tab "isolcpus" is the traditional, built-in method to isolate the cpu from the scheduler.                                                                                     \tab essentially allows us to prevent the OS-scheduler from assigning any process or thread to our core.                                                                  
+    \tab It remains idle until we assign a program/process to it explicitly using taskset or numactl                                                                          
+    \tab To use this, open /etc/default/grub, and add isolcpus=2,3 (to isolate cpu 2 and 3) to GRUB_CMDLINE_LINUX_DEFAULT string                                              
+    \tab GRUB_CMDLINE_LINUX_DEFAULT="quiet splash isolcpus=2". Save the file, exit.    
+    \tab update the GRUB bootloader using "sudo update-grub"                                                                                                   
+    \tab reboot the system for the changes to take place. sudo reboot.                                                                                                    
+    \tab also isolcpus only prevents user-tasks from being assigned there. It might still use it for hardware interrupts.                                     
+    \tab to prevent this, move the hardware interrupts to somewhere else, like core 0( Make sure to do this after rebooting). 
+    \tab To do this, "echo 1 $\vert$ sudo tee /proc/irq/default_smp_affinity"
+    \tab now that the core is just chilling, assign your binary executable to it in the following manner                                                       
+    \tab taskset -c 2 ./your-binary (Naturally, the 2 indicates the core to which you wanna write to this)
+                                                                                                                                                                             
+                                                                                                                                                                              \item undoing the cpu-core isolation                                                                                                                          
+    \tab sudo nano /etc/default/grub                                                                                                                              
+    \tab remove the isolcpus=2 fom the GRUB_CMDLINE_LINUX_DEFAULT string                                                                                           
+    \tab sudo update-grub                                                                                                                                             
+    \tab sudo reboot                                                                                                                                                           
+\end{enumerate}
+
+
+
+
+% ==============================================================================
+\end{document}
+% ==============================================================================
